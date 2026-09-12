@@ -1,0 +1,41 @@
+.summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  animation: scaleIn var(--transition-base);
+  /* leve elevação ao passar o mouse, para reforçar que os cards
+     também podem ser interativos (ex: clicáveis no futuro) */
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+}
+
+.summary-card__title {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-card__value {
+  font-size: 1.6rem;
+}
+
+.summary-card--income .summary-card__value {
+  color: var(--color-income);
+}
+
+.summary-card--expense .summary-card__value {
+  color: var(--color-expense);
+}
+
+.summary-card--balance .summary-card__value {
+  color: var(--color-primary-hover);
+}

@@ -1,0 +1,36 @@
+.confirm-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn var(--transition-fast);
+}
+
+.confirm-dialog__box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  width: min(360px, 90vw);
+  /* Entrada em "pop" (escala) para chamar atenção de que é uma ação
+     que precisa de decisão do usuário */
+  animation: scaleIn var(--transition-base);
+}
+
+.confirm-dialog__title {
+  margin: 0 0 var(--space-2);
+}
+
+.confirm-dialog__description {
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-4);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}

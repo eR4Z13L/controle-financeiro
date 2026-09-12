@@ -1,0 +1,76 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.layout__sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.layout__logo {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.layout__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.layout__nav-link {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  /* Transição suave de cor/fundo ao trocar de estado (hover/ativo) */
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.layout__nav-link:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+.layout__nav-link--active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.layout__content {
+  flex: 1;
+  padding: var(--space-5);
+  /* A troca de página entra com um leve fade + slide para cima,
+     dando sensação de continuidade em vez de "piscar" o conteúdo. */
+  animation: slideUp var(--transition-base);
+}
+
+@media (max-width: 720px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .layout__sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .layout__nav {
+    flex-direction: row;
+  }
+
+  .layout__content {
+    padding: var(--space-3);
+  }
+}

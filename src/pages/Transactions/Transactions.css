@@ -1,0 +1,42 @@
+.transactions-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.transactions-page__filters {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.transactions-page__filter-btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.transactions-page__filter-btn:hover {
+  border-color: var(--color-primary);
+}
+
+.transactions-page__filter-btn--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.transactions-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.transactions-page__empty {
+  color: var(--color-text-muted);
+}
