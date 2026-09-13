@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useTheme } from '../../hooks/useTheme';
 import './Layout.css';
 
 // Itens do menu centralizados em um array: adicionar uma nova página no
@@ -6,6 +7,7 @@ import './Layout.css';
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/transacoes', label: 'Transações' },
+  { to: '/recorrentes', label: 'Recorrentes' },
   { to: '/categorias', label: 'Categorias' },
 ];
 
@@ -15,10 +17,23 @@ const NAV_ITEMS = [
  * então não precisamos repetir a navegação em cada página.
  */
 export default function Layout() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <div className="layout">
       <aside className="layout__sidebar">
-        <h1 className="layout__logo">💰 Meu Financeiro</h1>
+        <div className="layout__header">
+          <h1 className="layout__logo">💰 Meu Financeiro</h1>
+          <button
+            type="button"
+            className="layout__theme-toggle"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+            aria-label="Alternar tema claro/escuro"
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+        </div>
         <nav className="layout__nav">
           {NAV_ITEMS.map((item) => (
             <NavLink

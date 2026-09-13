@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useFinance } from '../../hooks/useFinance';
+import { useToast } from '../../hooks/useToast';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import './Categories.css';
 
@@ -14,6 +15,7 @@ const EMPTY_FORM = { name: '', type: 'expense' };
  */
 export default function Categories() {
   const { categories, addCategory, updateCategory, deleteCategory } = useFinance();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState(EMPTY_FORM);
   // `editingId` diferencia se o formulário está criando (null) ou
@@ -27,8 +29,10 @@ export default function Categories() {
 
     if (editingId) {
       updateCategory(editingId, { name: form.name.trim(), type: form.type });
+      showToast('Categoria atualizada!');
     } else {
       addCategory({ name: form.name.trim(), type: form.type });
+      showToast('Categoria criada!');
     }
 
     setForm(EMPTY_FORM);
@@ -47,6 +51,7 @@ export default function Categories() {
 
   function handleConfirmDelete() {
     deleteCategory(categoryToDelete.id);
+    showToast('Categoria excluída.');
     setCategoryToDelete(null);
   }
 

@@ -23,9 +23,15 @@ export default function TransactionForm({ initialData, onSubmit, submitLabel }) 
     type: initialData?.type ?? 'expense',
     categoryId: initialData?.categoryId ?? '',
     date: initialData?.date ?? TODAY(),
+    recurring: false,
   }));
 
   const [errors, setErrors] = useState({});
+
+  // Só faz sentido marcar como recorrente ao CRIAR uma transação nova —
+  // editar uma ocorrência já gerada não deveria mudar o plano de repetição
+  // inteiro, então o checkbox nem aparece nesse caso.
+  const isCreating = !initialData;
 
   // Só mostramos categorias compatíveis com o tipo escolhido (receita
   // ou despesa), para evitar, por exemplo, marcar "Salário" numa despesa.
@@ -66,6 +72,7 @@ export default function TransactionForm({ initialData, onSubmit, submitLabel }) 
       type: form.type,
       categoryId: form.categoryId || null,
       date: form.date,
+      recurring: isCreating ? form.recurring : false,
     });
   }
 
@@ -142,6 +149,17 @@ export default function TransactionForm({ initialData, onSubmit, submitLabel }) 
           ))}
         </select>
       </div>
+
+      {isCreating && (
+        <label className="transaction-form__recurring">
+          <input
+            type="checkbox"
+            checked={form.recurring}
+            onChange={(event) => updateField('recurring', event.target.checked)}
+          />
+          🔁 Repetir todo mês (transação recorrente)
+        </label>
+      )}
 
       <button type="submit" className="btn btn--primary transaction-form__submit">
         {submitLabel}

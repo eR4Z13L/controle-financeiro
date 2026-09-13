@@ -30,6 +30,24 @@
   --transition-base: 250ms ease;
 }
 
+/* Tema claro: mesmas variáveis, valores diferentes. Como todo componente
+   usa `var(--color-*)` em vez de cores fixas, a troca de tema não exige
+   tocar em nenhum outro arquivo CSS — só isto aqui e o atributo
+   `data-theme` que o ThemeProvider escreve no <html>. */
+:root[data-theme='light'] {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-primary: #4f46e5;
+  --color-primary-hover: #6366f1;
+  --color-income: #16a34a;
+  --color-expense: #dc2626;
+  --color-danger: #dc2626;
+}
+
 * {
   box-sizing: border-box;
 }

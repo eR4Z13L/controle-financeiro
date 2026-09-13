@@ -1,0 +1,80 @@
+.recurring-page h2 {
+  margin-bottom: var(--space-2);
+}
+
+.recurring-page__hint {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-4);
+  max-width: 560px;
+}
+
+.recurring-page__empty {
+  color: var(--color-text-muted);
+}
+
+.recurring-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 640px;
+}
+
+.recurring-page__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  animation: slideUp var(--transition-base);
+}
+
+.recurring-page__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recurring-page__icon--income {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.recurring-page__icon--expense {
+  background: rgba(248, 113, 113, 0.15);
+}
+
+.recurring-page__info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.recurring-page__description {
+  font-weight: 500;
+}
+
+.recurring-page__meta {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.recurring-page__amount {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.recurring-page__amount--income {
+  color: var(--color-income);
+}
+
+.recurring-page__amount--expense {
+  color: var(--color-expense);
+}

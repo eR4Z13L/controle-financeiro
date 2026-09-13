@@ -1,5 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useFinance } from '../../hooks/useFinance';
+import { useToast } from '../../hooks/useToast';
 import TransactionForm from '../../components/TransactionForm/TransactionForm';
 
 /**
@@ -10,6 +11,7 @@ import TransactionForm from '../../components/TransactionForm/TransactionForm';
 export default function TransactionEdit() {
   const { id } = useParams();
   const { transactions, updateTransaction } = useFinance();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const transaction = transactions.find((item) => item.id === id);
@@ -27,8 +29,9 @@ export default function TransactionEdit() {
     );
   }
 
-  function handleSubmit(data) {
+  function handleSubmit({ recurring: _recurring, ...data }) {
     updateTransaction(id, data);
+    showToast('Transação atualizada!');
     navigate('/transacoes');
   }
 

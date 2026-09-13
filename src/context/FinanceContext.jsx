@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { generateId } from '../utils/format';
+import { getMissingOccurrences } from '../utils/recurring';
 import { FinanceContext } from './context';
 
 // Categorias padrão criadas na primeira vez que o app roda.
@@ -29,6 +30,9 @@ function transactionsReducer(state, action) {
     case 'ADD_TRANSACTION':
       return [action.payload, ...state];
 
+    case 'ADD_MANY_TRANSACTIONS':
+      return [...action.payload, ...state];
+
     case 'UPDATE_TRANSACTION':
       return state.map((transaction) =>
         transaction.id === action.payload.id ? action.payload : transaction
@@ -47,6 +51,9 @@ function categoriesReducer(state, action) {
     case 'ADD_CATEGORY':
       return [...state, action.payload];
 
+    case 'ADD_MANY_CATEGORIES':
+      return [...state, ...action.payload];
+
     case 'UPDATE_CATEGORY':
       return state.map((category) =>
         category.id === action.payload.id ? action.payload : category
@@ -60,11 +67,28 @@ function categoriesReducer(state, action) {
   }
 }
 
+function recurringReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_RECURRING':
+      return [...state, action.payload];
+
+    case 'DELETE_RECURRING':
+      return state.filter((template) => template.id !== action.payload.id);
+
+    default:
+      return state;
+  }
+}
+
 export function FinanceProvider({ children }) {
   // Guardamos o estado "cru" no localStorage e usamos o reducer por cima
   // dele para aplicar as regras de atualização de forma previsível.
   const [transactions, setTransactions] = useLocalStorage('finance:transactions', []);
   const [categories, setCategories] = useLocalStorage('finance:categories', DEFAULT_CATEGORIES);
+  const [recurringTemplates, setRecurringTemplates] = useLocalStorage(
+    'finance:recurringTemplates',
+    []
+  );
 
   // `dispatch` para transações: aplica o reducer sobre o valor atual
   // e já persiste o resultado via setTransactions (que vem do useLocalStorage).
@@ -74,6 +98,10 @@ export function FinanceProvider({ children }) {
 
   const dispatchCategories = (action) => {
     setCategories((current) => categoriesReducer(current, action));
+  };
+
+  const dispatchRecurring = (action) => {
+    setRecurringTemplates((current) => recurringReducer(current, action));
   };
 
   // --- Ações de Transações (CRUD completo) ---
@@ -117,6 +145,64 @@ export function FinanceProvider({ children }) {
     );
   };
 
+  // --- Ações de Transações Recorrentes ---
+  // Um "modelo" recorrente (ex: "Aluguel, todo dia 5") não é uma transação
+  // em si — ele só descreve o padrão. As transações de verdade são geradas
+  // a partir dele pelo efeito logo abaixo.
+  const addRecurringTemplate = (data) => {
+    dispatchRecurring({ type: 'ADD_RECURRING', payload: { id: generateId(), ...data } });
+  };
+
+  const deleteRecurringTemplate = (id) => {
+    dispatchRecurring({ type: 'DELETE_RECURRING', payload: { id } });
+    // Assim como nas categorias, excluir o modelo só impede NOVAS
+    // ocorrências futuras — as transações já geradas continuam no
+    // histórico normalmente.
+  };
+
+  // Sempre que a lista de modelos recorrentes muda (app abriu, ou um novo
+  // modelo foi criado), verificamos se algum mês entre o início do modelo
+  // e hoje ainda não tem uma ocorrência gerada, e criamos as que faltarem.
+  // Não depende de `transactions` no array de dependências de propósito:
+  // a função já é idempotente (não duplica), então rodar só quando os
+  // modelos mudam é suficiente e evita loops de re-render.
+  useEffect(() => {
+    if (recurringTemplates.length === 0) return;
+
+    setTransactions((current) => {
+      const missing = getMissingOccurrences(recurringTemplates, current);
+      return missing.length > 0 ? [...missing, ...current] : current;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recurringTemplates]);
+
+  // --- Importação de dados (exportados anteriormente em JSON) ---
+  // Os ids são regenerados para não colidir com o que já existe no
+  // navegador — importar nunca sobrescreve nada, só adiciona.
+  const importData = ({ categories: importedCategories = [], transactions: importedTransactions = [] }) => {
+    const categoryIdMap = new Map();
+    const newCategories = importedCategories.map((category) => {
+      const newId = generateId();
+      categoryIdMap.set(category.id, newId);
+      return { ...category, id: newId };
+    });
+
+    const newTransactions = importedTransactions.map((transaction) => ({
+      ...transaction,
+      id: generateId(),
+      categoryId: categoryIdMap.get(transaction.categoryId) ?? transaction.categoryId ?? null,
+    }));
+
+    if (newCategories.length > 0) {
+      dispatchCategories({ type: 'ADD_MANY_CATEGORIES', payload: newCategories });
+    }
+    if (newTransactions.length > 0) {
+      dispatchTransactions({ type: 'ADD_MANY_TRANSACTIONS', payload: newTransactions });
+    }
+
+    return { categoriesCount: newCategories.length, transactionsCount: newTransactions.length };
+  };
+
   // Valores derivados (totais) recalculados só quando `transactions` muda,
   // evitando recomputar em toda renderização sem necessidade.
   const summary = useMemo(() => {
@@ -133,6 +219,7 @@ export function FinanceProvider({ children }) {
   const value = {
     transactions,
     categories,
+    recurringTemplates,
     summary,
     addTransaction,
     updateTransaction,
@@ -140,6 +227,9 @@ export function FinanceProvider({ children }) {
     addCategory,
     updateCategory,
     deleteCategory,
+    addRecurringTemplate,
+    deleteRecurringTemplate,
+    importData,
   };
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;
